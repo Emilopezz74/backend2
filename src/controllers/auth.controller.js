@@ -111,7 +111,7 @@ class AuthController {
             await AuthService.verifyEmail(verification_token)
 
        // Si URL_FRONTEND = 'http://localhost:3000/'
-return response.redirect(`${ENVIRONMENT.URL_FRONTEND}/login`);
+return response.redirect(`${ENVIRONMENT.URL_FRONTEND}login`);
 
         } 
         catch (error) {
