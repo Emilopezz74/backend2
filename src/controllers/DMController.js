@@ -2,10 +2,9 @@ import MessageService from "../services/message.service.js";
 import { getMemberId } from "../utils/member.util.js";
 
 class DMController {
-
     static async getAll(req, res) {
-        const { workspace_id, member_id } = req.params; // member_id = ID del usuario receptor
-        const sender_user_id = req.user.id;
+        const { workspace_id, member_id } = req.params; // user_id del receptor
+        const sender_user_id = req.user.id; // user_id del emisor
 
         try {
             const sender_member_id = await getMemberId(sender_user_id, workspace_id);
@@ -13,15 +12,16 @@ class DMController {
 
             const messages = await MessageService.getDM(
                 workspace_id,
-                sender_user_id,
-                member_id
+                sender_member_id,
+                receiver_member_id
             );
 
+            // Mapeo para el front
             const mapped = messages.map(m => ({
                 content: m.content,
                 created_at: m.created_at,
                 sender_member_id: m.sender_member,
-                sender_name: m.sender_member === sender_member_id ? "Yo" : "Otro"
+                isMine: m.sender_member === sender_member_id
             }));
 
             res.json({ ok: true, messages: mapped });
@@ -42,23 +42,23 @@ class DMController {
             const receiver_member_id = await getMemberId(member_id, workspace_id);
 
             await MessageService.createDM(
-                content,
-                sender_user_id,
-                member_id,
-                workspace_id
+                workspace_id,
+                sender_member_id,
+                receiver_member_id,
+                content
             );
 
             const messages = await MessageService.getDM(
                 workspace_id,
-                sender_user_id,
-                member_id
+                sender_member_id,
+                receiver_member_id
             );
 
             const mapped = messages.map(m => ({
                 content: m.content,
                 created_at: m.created_at,
                 sender_member_id: m.sender_member,
-                sender_name: m.sender_member === sender_member_id ? "Yo" : "Otro"
+                isMine: m.sender_member === sender_member_id
             }));
 
             res.status(201).json({ ok: true, messages: mapped });

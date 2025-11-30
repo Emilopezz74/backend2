@@ -1,14 +1,8 @@
-import pool from "../config/mysql.config.js";
 import DMMessageRepository from "../repositories/dmMessage.repository.js";
-import { getMemberId } from "../utils/member.util.js";
 
 class MessageService {
-
-    // Crear mensaje DM
-    static async createDM(content, sender_user_id, receiver_user_id, workspace_id) {
-        const sender_member_id = await getMemberId(sender_user_id, workspace_id);
-        const receiver_member_id = await getMemberId(receiver_user_id, workspace_id);
-
+    // Crear mensaje DM (recibe IDs de miembros directamente)
+    static async createDM(workspace_id, sender_member_id, receiver_member_id, content) {
         return await DMMessageRepository.create(
             workspace_id,
             sender_member_id,
@@ -17,11 +11,8 @@ class MessageService {
         );
     }
 
-    // Obtener mensajes DM
-    static async getDM(workspace_id, sender_user_id, receiver_user_id) {
-        const sender_member_id = await getMemberId(sender_user_id, workspace_id);
-        const receiver_member_id = await getMemberId(receiver_user_id, workspace_id);
-
+    // Obtener mensajes DM (recibe IDs de miembros directamente)
+    static async getDM(workspace_id, sender_member_id, receiver_member_id) {
         return await DMMessageRepository.getAll(
             workspace_id,
             sender_member_id,
@@ -31,3 +22,4 @@ class MessageService {
 }
 
 export default MessageService;
+
